@@ -1,9 +1,9 @@
 <template>
-  <div id="app">
+  <div class="app">
     <p class="speed-counter">{{ displayWPM }} WPM</p>
     <div class="history">
       <p class="history__heading">History</p>
-      <p v-for="(wpm, index) in reversedWPMHistory" :key="index">
+      <p v-for="(wpm, index) in recentWPMHistory" :key="index">
         {{ wpm }} WPM
       </p>
     </div>
@@ -18,14 +18,14 @@ export default {
       words: 0, // letters typed
       startTime: Date.now(),
       wpm: 0,
-      wpmHistory: Array(10).fill(0),
-      smoothedWPMHistory: Array(10).fill(0),
+      wpmHistory: [],
+      smoothedWPMHistory: [],
       displayWPM: 0,
     }
   },
   computed: {
-    reversedWPMHistory() {
-      return this.smoothedWPMHistory.slice().reverse();
+    recentWPMHistory() {
+      return this.smoothedWPMHistory.slice().reverse().slice(0, 5);
     }
   },
   mounted() {
@@ -39,8 +39,7 @@ export default {
       let wpmHistory = this.wpmHistory.slice(-3);
       let smoothedWPM = this.smooth(wpmHistory)[wpmHistory.length - 1];
 
-      this.smoothedWPMHistory.shift(Math.round(smoothedWPM));
-      console.log(this.smooth(wpmHistory), wpmHistory);
+      this.smoothedWPMHistory.push(Math.round(smoothedWPM));
       this.displayWPM = Math.round(smoothedWPM);
     }, 5000);
   },
@@ -68,7 +67,7 @@ export default {
     calculateWPM() {
       const timeElapsed = (Date.now() - this.startTime) / 1000 / 60; // from ms to minutes
       this.wpm = Math.round(this.words / 5 / timeElapsed); // 5 letters per word
-      this.wpmHistory.shift(this.wpm);
+      this.wpmHistory.push(this.wpm);
       this.words = 0;
       this.startTime = Date.now();
     },
@@ -100,7 +99,7 @@ body {
   font-family: 'Roboto', sans-serif;
   line-height: 1.6;
   font-size: 1.6rem;
-  font-weight: 400;
+  font-weight: 300;
 }
 
 img {
@@ -123,11 +122,13 @@ ul {
   list-style: none;
 }
 
-#app {
+.app {
   display: grid;
   place-items: center;
+  grid-template-rows: 1fr auto;
   min-height: 100vh;
   background-color: var(--clr-light-1);
+  padding: 2rem 0;
 }
 
 .speed-counter {
@@ -137,16 +138,22 @@ ul {
 }
 
 .history {
-  position: fixed;
-  right: 2rem;
-  top: 2rem;
-  text-align: right;
   font-size: 2rem;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .history {
+    position: fixed;
+    right: 2rem;
+    top: 2rem;
+    text-align: right;
+  }
 }
 
 .history__heading {
   font-size: 2.5rem;
-  font-weight: 500;
+  font-weight: 400;
   color: var(--clr-dark-1);
 }
 </style>
