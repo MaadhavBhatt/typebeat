@@ -46,6 +46,7 @@ export default {
 
   methods: {
     average(arr) {
+      if (arr.length === 0) return 0;
       return arr.reduce((a, b) => a + b, 0) / arr.length;
     },
 
@@ -68,9 +69,20 @@ export default {
       const timeElapsed = (Date.now() - this.startTime) / 1000 / 60; // from ms to minutes
       this.wpm = Math.round(this.words / 5 / timeElapsed); // 5 letters per word
       this.wpmHistory.push(this.wpm);
+      this.flashWPM();
       this.words = 0;
       this.startTime = Date.now();
     },
+
+    flashWPM() {
+      this.$nextTick(() => {
+        const speedCounter = this.$el.querySelector('.speed-counter');
+        speedCounter.classList.add('flash');
+        setTimeout(() => {
+          speedCounter.classList.remove('flash');
+        }, 500);
+      });
+    }
   }
 }
 </script>
@@ -81,8 +93,8 @@ export default {
 /* Reset */
 :root {
   --clr-light-1: hsl(0, 0%, 94%);
-  --clr-dark-1: hsl(0, 0%, 20%);
   /* #333 */
+  --clr-dark-1: hsl(0, 0%, 20%);
   --clr-dark-2: hsl(0, 0%, 30%);
 
   font-size: 10px;
@@ -150,12 +162,37 @@ ul {
   font-weight: 400;
 }
 
+.flash {
+  animation: flash-animation 0.5s ease-in-out;
+}
+
+@keyframes flash-animation {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+    color: var(--clr-dark-2);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
 @media (min-width: 768px) {
   .history {
     position: fixed;
     right: 2rem;
     top: 2rem;
     text-align: right;
+  }
+}
+
+@media (prefers-reduced-motion) {
+  .flash {
+    animation: none;
   }
 }
 </style>
