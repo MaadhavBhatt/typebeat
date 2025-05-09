@@ -2,7 +2,7 @@
   <div class="app">
     <p class="speed-counter">{{ displayWPM }} WPM</p>
     <div class="history">
-      <p class="history__heading">History</p>
+      <p v-if="recentWPMHistory.length !== 0" class="history__heading">History</p>
       <p v-for="(wpm, index) in recentWPMHistory" :key="index">
         {{ wpm }} WPM
       </p>
@@ -80,8 +80,10 @@ export default {
 
 /* Reset */
 :root {
-  --clr-light-1: #f0f0f0;
-  --clr-dark-1: #333;
+  --clr-light-1: hsl(0, 0%, 94%);
+  --clr-dark-1: hsl(0, 0%, 20%);
+  /* #333 */
+  --clr-dark-2: hsl(0, 0%, 30%);
 
   font-size: 10px;
 }
@@ -140,6 +142,12 @@ ul {
 .history {
   font-size: 2rem;
   text-align: center;
+  color: var(--clr-dark-2);
+}
+
+.history__heading {
+  font-size: 2.5rem;
+  font-weight: 400;
 }
 
 @media (min-width: 768px) {
@@ -149,11 +157,5 @@ ul {
     top: 2rem;
     text-align: right;
   }
-}
-
-.history__heading {
-  font-size: 2.5rem;
-  font-weight: 400;
-  color: var(--clr-dark-1);
 }
 </style>
